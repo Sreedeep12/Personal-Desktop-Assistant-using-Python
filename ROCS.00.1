@@ -1,240 +1,257 @@
-import pyttsx3
-import datetime
-import speech_recognition as sr
-import wikipedia
-import webbrowser
-import os
-import smtplib
-import pywhatkit as wk
-# from database import getans
-# from database import qa
-import requests
-import cv2
-import random
-import pyautogui
-import time
+# Importing necessary libraries for various functionalities
+import pyttsx3  # For text-to-speech conversion
+import datetime  # To handle date and time operations
+import speech_recognition as sr  # For recognizing speech using a microphone
+import wikipedia  # For fetching summaries from Wikipedia
+import webbrowser  # For opening URLs in a web browser
+import os  # For interacting with the operating system
+import smtplib  # For sending emails
+import pywhatkit as wk  # For additional utilities like playing YouTube videos
+# from database import getans  # For retrieving answers from a database (commented out)
+# from database import qa  # For question-answer functionality from a database (commented out)
+import requests  # For making HTTP requests
+import cv2  # For camera and image processing
+import random  # For generating random numbers
+import pyautogui  # For controlling the GUI
+import time  # For various time-related functions
 
-engine= pyttsx3.init('sapi5')#to get a voice for output
-voices= engine.getProperty('voices') 
-engine.setProperty('voice', voices[1].id)
+# Initializing the text-to-speech engine
+engine = pyttsx3.init('sapi5')  # Using SAPI5 for voice output
+voices = engine.getProperty('voices')  # Getting available voices
+engine.setProperty('voice', voices[1].id)  # Setting the voice to the second available voice
 
-def speak(audio):#for speaking
-    engine.say(audio)
-    engine.runAndWait()
+# Function to make the program speak a given text
+def speak(audio):
+    engine.say(audio)  # Say the provided text
+    engine.runAndWait()  # Wait for the speech to finish
 
-def wishMe():#wishing the user
-    hour= int(datetime.datetime.now().hour)
-    if hour>=0 and hour<12:
-        speak("Good Morning!")
+# Function to greet the user based on the current time
+def wishMe():
+    hour = int(datetime.datetime.now().hour)  # Get the current hour
+    if hour >= 0 and hour < 12:
+        speak("Good Morning!")  # Morning greeting
         print("Good Morning!")
-    elif hour>=12 and hour<18:
-        speak("Good Afternoon!")
+    elif hour >= 12 and hour < 18:
+        speak("Good Afternoon!")  # Afternoon greeting
         print("Good Afternoon!")
     else:
-        speak("Good Evening!")
+        speak("Good Evening!")  # Evening greeting
         print("Good Evening!")
 
-    speak("This is Rocs how may i rock your world?")
+    speak("This is Rocs how may i rock your world?")  # Introduction
     print("This is Rocs how may i rock your world?")
 
-def takeCommand():#taking user command
-    ''' 
-    it takes mic - voice input and returns string output
+# Function to take voice commands from the user
+def takeCommand():
     '''
-    r= sr.Recognizer()
-    with sr.Microphone() as source:
-        r.pause_threshold =1
-        audio = r.listen(source)
-        print("i am listening...")
+    It takes mic - voice input and returns string output
+    '''
+    r = sr.Recognizer()  # Initializing the recognizer
+    with sr.Microphone() as source:  # Using the microphone as source
+        r.pause_threshold = 1  # Setting a pause threshold for speech
+        audio = r.listen(source)  # Listening to the user's input
+        print("I am listening...")
+
     try:
-        print("working on it...")
-        query = r.recognize_google(audio, language='en-in') #recognizing the voice for processing
-        query = query.lower()
-        print(f"user said: {query}\n ")
-    except Exception as e: #when voice cant be recognized
+        print("Working on it...")
+        query = r.recognize_google(audio, language='en-in')  # Recognizing the voice input
+        query = query.lower()  # Converting to lowercase
+        print(f"user said: {query}\n")
+    except Exception as e:  # In case the voice can't be recognized
         print("Can't Recognise will you say that again please...")
         speak("Can't Recognise will you say that again please...")
         return "None"
-    return query#returning query for processing 
+    return query  # Returning the recognized text
 
-def sendEmail(to, content):#function to send mail
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.ehlo()
-    server.startls()
-    server.login('youremail@gmail.com', 'your-password')
-    server.sendmail('youremail@gmail.com', to, content)
-    server.close()
+# Function to send an email
+def sendEmail(to, content):
+    server = smtplib.SMTP('smtp.gmail.com', 587)  # Connecting to the SMTP server
+    server.ehlo()  # Establishing the connection
+    server.starttls()  # Securing the connection
+    server.login('youremail@gmail.com', 'your-password')  # Logging in to the email account
+    server.sendmail('youremail@gmail.com', to, content)  # Sending the email
+    server.close()  # Closing the server connection
 
-
+# Main function where the script execution starts
 if __name__ == "__main__":
-    wishMe()#calling wish me to greet the user
-    while True: #using loop for continuous processing
-        query = takeCommand().lower()
-        #logic for executing tasks based on query
+    wishMe()  # Call the function to greet the user
+
+    # Infinite loop to keep the program running and taking commands
+    while True:
+        query = takeCommand().lower()  # Taking the user command
+
+        # Logic to execute tasks based on the user's query
         if 'wikipedia' in query:
             speak('searching in wikipedia....')
-            query = query.replace("wikipedia", "")
-            results = wikipedia.summary(query, sentences=1)
+            query = query.replace("wikipedia", "")  # Removing 'wikipedia' from the query
+            results = wikipedia.summary(query, sentences=1)  # Fetching summary from Wikipedia
             speak("According to Wikipedia")
             speak(results)
             print(results)
 
         elif 'open youtube' in query:
-            speak("what do u want me to play?")
-            print("what do u want me to play?")
-            qry=takeCommand().lower()
-            wk.playonyt(f"{qry}")
+            speak("What do you want me to play?")
+            print("What do you want me to play?")
+            qry = takeCommand().lower()  # Taking the search term
+            wk.playonyt(f"{qry}")  # Playing the video on YouTube
 
         elif 'open google' in query:
-            speak("what should i search?")
-            print("what should i search?")
-            qry=takeCommand().lower()
-            webbrowser.open(f"{qry}")
-            results= wikipedia.summary(qry, sentences=1)
+            speak("What should I search?")
+            print("What should I search?")
+            qry = takeCommand().lower()  # Taking the search term
+            webbrowser.open(f"{qry}")  # Opening the search in a web browser
+            results = wikipedia.summary(qry, sentences=1)  # Fetching a brief summary from Wikipedia
             speak(results)
 
         elif 'open stack overflow' in query:
-            webbrowser.open("stackoverflow.com")
-            speak("opening stack overflow")
+            webbrowser.open("stackoverflow.com")  # Opening Stack Overflow
+            speak("Opening Stack Overflow")
+
         elif 'the time' in query:
-            strTime= datetime.datetime.now().strftime("%H:%M:%S")
-            speak(f"Yo! the time is {strTime}")
-            print(f"Yo! the time is {strTime}")
+            strTime = datetime.datetime.now().strftime("%H:%M:%S")  # Getting the current time
+            speak(f"Yo! The time is {strTime}")
+            print(f"Yo! The time is {strTime}")
+
         elif 'open code' in query:
-            codePath = "C:\\Users\\USER\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"
-            os.startfile(codePath)
-            speak("opening code")
+            codePath = "C:\\Users\\USER\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"  # Path to VS Code
+            os.startfile(codePath)  # Opening VS Code
+            speak("Opening Code")
 
         elif 'close browser' in query:
-            os.system("taskkill /f/im msedge.exe")
+            os.system("taskkill /f /im msedge.exe")  # Closing Microsoft Edge
 
         elif 'close chrome' in query:
-            os.system("taskkill /f/im chrome.exe")
+            os.system("taskkill /f /im chrome.exe")  # Closing Google Chrome
 
-        elif 'take screenshot' in query: #30
-            speak('tell me a name for the file')
-            name=takeCommand().lower()
-            time.sleep(3)
-            img = pyautogui.screenshot()
-            img.save(f"{name}.png")
-            speak("screenshot saved")
+        elif 'take screenshot' in query:
+            speak('Tell me a name for the file')
+            name = takeCommand().lower()  # Taking the name for the screenshot file
+            time.sleep(3)  # Waiting for a few seconds
+            img = pyautogui.screenshot()  # Taking a screenshot
+            img.save(f"{name}.png")  # Saving the screenshot with the given name
+            speak("Screenshot saved")
 
         elif 'email to naman' in query:
             try:
-                speak("What should I say")
-                content = takeCommand()
-                to = "namanagarwal@email.com"
-                sendEmail(to, content)
+                speak("What should I say?")
+                content = takeCommand()  # Taking the content for the email
+                to = "namanagarwal@email.com"  # Recipient's email address
+                sendEmail(to, content)  # Sending the email
                 speak("Email has been sent!")
             except Exception as e:
                 print(e)
-                speak("Sorry mate mail cant be sent!")
-                
-        elif 'who are you' in query:
-            speak("I am rocs a smart A.I. for your fun")
-            print("I am rocs a smart A.I. for your fun")
+                speak("Sorry mate, the mail can't be sent!")
 
-        elif 'hello rocks'  in query:
-            speak("Hello i am ready to rock your world")
-            print("Hello i am ready to rock your world")
-        elif 'hello rock'  in query:
-            speak("Hello i am ready to rock your world")
-            print("Hello i am ready to rock your world")
+        elif 'who are you' in query:
+            speak("I am Rocs, a smart A.I. for your fun")
+            print("I am Rocs, a smart A.I. for your fun")
+
+        elif 'hello rocks' in query:
+            speak("Hello, I am ready to rock your world")
+            print("Hello, I am ready to rock your world")
+
+        elif 'hello rock' in query:
+            speak("Hello, I am ready to rock your world")
+            print("Hello, I am ready to rock your world")
+
         elif 'hello rocs' in query:
-            speak("Hello i am ready to rock your world")
-            print("Hello i am ready to rock your world")
+            speak("Hello, I am ready to rock your world")
+            print("Hello, I am ready to rock your world")
+
         elif 'hi rocks' in query:
-            speak("Hello i am ready to rock your world")
-            print("Hello i am ready to rock your world")
+            speak("Hello, I am ready to rock your world")
+            print("Hello, I am ready to rock your world")
+
         elif 'hi rock' in query:
-            speak("Hello i am ready to rock your world")
-            print("Hello i am ready to rock your world")
+            speak("Hello, I am ready to rock your world")
+            print("Hello, I am ready to rock your world")
 
         elif 'how are you' in query:
-            speak("I am fine how are you?")
-            print("I am fine how are you?")
+            speak("I am fine, how are you?")
+            print("I am fine, how are you?")
 
         elif 'i am fine' in query:
-            speak("nice anything i can do for you?")
-            print("nice anything i can do for you?")
+            speak("Nice, anything I can do for you?")
+            print("Nice, anything I can do for you?")
 
         elif 'i love you' in query:
-            speak("i am not ment for love only work")
-            print("i am not ment for love only work")
+            speak("I am not meant for love, only work")
+            print("I am not meant for love, only work")
 
         elif 'your name' in query:
-            speak("i am Rocs a rocking AI")
-            print("i am Rocs a rocking AI")
+            speak("I am Rocs, a rocking AI")
+            print("I am Rocs, a rocking AI")
 
         elif 'better than google' in query:
-            speak("i try to follow my idol my role model but i try to be better")
-            print("i try to follow my idol my role model but i try to be better")
+            speak("I try to follow my idol, my role model, but I try to be better")
+            print("I try to follow my idol, my role model, but I try to be better")
 
-        elif 'better you or google'  in query:
-            speak("i try to follow my idol my role model but i try to be better")
-            print("i try to follow my idol my role model but i try to be better")
+        elif 'better you or google' in query:
+            speak("I try to follow my idol, my role model, but I try to be better")
+            print("I try to follow my idol, my role model, but I try to be better")
 
-        elif  'better than alexa'  in query:
-            speak("i try to follow my idol my role model but i try to be better")
-            print("i try to follow my idol my role model but i try to be better")
+        elif 'better than alexa' in query:
+            speak("I try to follow my idol, my role model, but I try to be better")
+            print("I try to follow my idol, my role model, but I try to be better")
 
         elif 'better you or alexa' in query:
-            speak("i try to follow my idol my role model but i try to be better")
-            print("i try to follow my idol my role model but i try to be better")
-        
+            speak("I try to follow my idol, my role model, but I try to be better")
+            print("I try to follow my idol, my role model, but I try to be better")
 
         elif 'what is' in query:
-            print("Searching wikipedia")
-            speak("Searching wikipedia")
-            query=query.replace("what is", "")
-            results= wikipedia.summary(query, sentences=1)
-            speak("according to wikipedia")
+            print("Searching Wikipedia")
+            speak("Searching Wikipedia")
+            query = query.replace("what is", "")  # Removing 'what is' from the query
+            results = wikipedia.summary(query, sentences=1)  # Fetching a brief summary from Wikipedia
+            speak("According to Wikipedia")
             speak(results)
             print(results)
 
         elif 'who is' in query:
-            print("Searching wikipedia")
-            speak("Searching wikipedia")
-            query=query.replace("whho is", "")
-            results= wikipedia.summary(query, sentences=1)
-            speak("according to wikipedia")
+            print("Searching Wikipedia")
+            speak("Searching Wikipedia")
+            query = query.replace("who is", "")  # Removing 'who is' from the query
+            results = wikipedia.summary(query, sentences=1)  # Fetching a brief summary from Wikipedia
+            speak("According to Wikipedia")
             speak(results)
             print(results)
-        
+
         elif 'open camera' in query:
-            cap= cv2.VideoCapture(0)
+            cap = cv2.VideoCapture(0)  # Accessing the default camera
             while True:
-                ret, img= cap.read()
-                cv2.imshow('webcam', img)
-                k= cv2.waitKey(50)
-                if k==27:
-                    break;
-            cap.release()
-            cv2.destroyAllWindows()
+                ret, img = cap.read()  # Reading frames from the camera
+                cv2.imshow('webcam', img)  # Displaying the video feed
+                k = cv2.waitKey(50)  # Waiting for a key event
+                if k == 27:  # Exit on pressing 'Esc' key
+                    break
+            cap.release()  # Releasing the camera
+            cv2.destroyAllWindows()  # Closing all OpenCV windows
 
         elif 'volume up' in query:
-            for num in range(1,11):
-                pyautogui.press("volumeup")
-        elif 'volume down' in query:
-            for num in range(1,11):
-                pyautogui.press("volumedown")
-        elif "mute" in query:
-            pyautogui.press("volumemute")
-        elif "unmute" in query:
-            pyautogui.press("volumemute")
+            for num in range(1, 11):
+                pyautogui.press("volumeup")  # Increasing the volume
 
-        
+        elif 'volume down' in query:
+            for num in range(1, 11):
+                pyautogui.press("volumedown")  # Decreasing the volume
+
+        elif "mute" in query:
+            pyautogui.press("volumemute")  # Muting the volume
+
+        elif "unmute" in query:
+            pyautogui.press("volumemute")  # Unmuting the volume
+
         elif 'close browser' in query:
             browserExe = "msedge.exe"
-            os.system("taskkill/f /im "+browserExe)
+            os.system("taskkill /f /im " + browserExe)  # Closing Microsoft Edge
 
         elif 'close chrome' in query:
-            os.system("taskkill /f /im chrome.exe")
-        
+            os.system("taskkill /f /im chrome.exe")  # Closing Google Chrome
+
         # elif 'joke' in query:
         #     url="https://official-joke-api.appsot.com/random_joke"
         #     json_data=requests.get(url).json()
-
+        #
         #     arr=["",""]
         #     arr[0]=json_data["setup"]
         #     arr[1]= json_data["punchline"]
@@ -242,24 +259,29 @@ if __name__ == "__main__":
         #     speak(arr[0])
         #     print(arr[1])
         #     speak(arr[1])
+
         # elif qa()!="" :
         #     answer= getans(query)
         #     speak(answer)
         #     print(answer)
 
         elif 'shut up' in query:
-            speak("sorry! ill be offline")
-            print("soryy! ill be offline")
-            break 
-        elif 'shut down'  in query:
-            speak("sorry! ill be offline")
-            print("soryy! ill be offline")
-            break
-        elif 'quit'  in query:
+            speak("Sorry! I'll be offline")
+            print("Sorry! I'll be offline")
+            break  # Exit the loop and end the program
+
+        elif 'shut down' in query:
+            speak("Sorry! I'll be offline")
+            print("Sorry! I'll be offline")
+            break  # Exit the loop and end the program
+
+        elif 'quit' in query:
             speak("See you soon")
-            print("see you soon")
-            break
+            print("See you soon")
+            break  # Exit the loop and end the program
+
         elif 'bye' in query:
             speak("See you soon")
-            print("see you soon")
-            break
+            print("See you soon")
+            break  # Exit the loop and end the program
+
